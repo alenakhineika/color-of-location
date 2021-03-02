@@ -1,0 +1,27 @@
+{
+  "name": "color-of-location",
+  "displayName": "color-of-location",
+  "version": "0.0.1",
+  "description": "Fetch the color of the sky for location",
+  "scripts": {
+    "start": "tsc && node build/index.js",
+    "lint": "eslint '**/*.{js,ts}'",
+    "check": "npm run lint",
+    "prettier-format": "run-script-os",
+    "prettier-format:win32": "prettier --config .prettierrc \"./src/**/*.ts\" --write",
+    "prettier-format:darwin:linux": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "prettier-format:default": "prettier --config .prettierrc 'src/**/*.ts' --write"
+  },
+  "dependencies": {
+    "canvas": "2.6.1",
+    "chalk": "^4.1.0",
+    "color-convert": "^2.0.1",
+    "dotenv": "8.2.0",
+    "mongodb": "^3.6.4",
+    "typescript": "^4.2.2"
+  },
+  "devDependencies": {
+    "@types/mongodb": "^3.6.8",
+    "prettier": "2.2.1"
+  }
+}
