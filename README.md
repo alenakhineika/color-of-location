@@ -42,13 +42,13 @@ The [node-canvas-lambda](https://github.com/jwerre/node-canvas-lambda) provides 
 
 ## To run locally
 
-In the project root directory create the .env file from the .env.example file and specify all required values.
+In the project root directory create the `.env` file from the `.env.example` file and specify all required values.
 
 - SOURCE_IMAGE - The URL to the webcam image.
 - LOCATION - The text name of the location.
 - MONGODB_ATLAS_CLUSTER_URI - The connection string to the database.
 
-Run the project on Ubuntu.
+Start the project.
 
 ```
 > node index.js
