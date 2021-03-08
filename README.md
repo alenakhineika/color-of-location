@@ -1,6 +1,6 @@
 # Color of Location
 
-> The [Color of Berlin](https://github.com/laurendorman/color-of-berlin) Twitter bot changed the source image what causes extreme colors in the timeline. This project fetches the color of the sky from the [Instituts für Meteorologie der FU-Berlin](http://www.met.fu-berlin.de/de/wetter/webcam/) and saved them directly to the database to supply the [Color of Berlin Palette](https://github.com/alenakhineika/color-of-berlin-palette) with realistic colors.
+> The [Color of Berlin](https://github.com/laurendorman/color-of-berlin) Twitter bot changed the source image what causes extreme colors in the timeline. This project fetches images of the sky from the [Instituts für Meteorologie der FU-Berlin](http://www.met.fu-berlin.de/de/wetter/webcam/), extracts colors, and saves them directly to the database to supply [Color of Berlin Palette](https://github.com/alenakhineika/color-of-berlin-palette) with realistic colors.
 
 The `Color of Location` is an AWS serverless application integrated with [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). It uses the `node-canvas` native module to get a dominant color from images, therefore to make it work with the AWS lambda function the project should be compiled on the Linux environment, and the `node-canvas` module should be pre-built and uploaded to AWS lambda layers.
 
