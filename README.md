@@ -67,8 +67,9 @@ exports.handler = run;
 ```
 
 Configure AWS Lambda:
-- Add integration between Lambda and Atlas.
 - Create a lambda function.
+- Add integration between Lambda and Atlas.
+- Add environment variables.
 - Upload `code.zip`, `node_canvas_layer.zip`, and `node_canvas_lib64_layer.zip` to Amazon S3, because zip files bigger than 10 MB. Note, that the total unzipped size of the function and all layers can't exceed the unzipped deployment package size limit of 250 MB.
 - Crete `nodeCanvas` and `nodeCanvasLib64` layers from uploaded binaries and add them to your lambda function.
 - Create `EventBridge` that triggers the lambda function according to schedule, e.g. `rate(1 hour)`.
