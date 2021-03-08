@@ -27,7 +27,24 @@ Install wget, zip, unzip and [node](https://gist.github.com/d2s/372b5943bce17b96
 > cd home
 > apt-get update
 > apt-get install wget zip unzip
+> wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 ```
+
+> Close and reopen your terminal to start using nvm or run the following to use it right away:
+
+```
+> export NVM_DIR="$HOME/.nvm"
+> [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+> [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion bash_completion
+```
+
+The current example uses Node 12. The problem with Node 14 is that `node-canvas` binaries for this version exceed the allowed total lambda function size.
+
+```
+> nvm install 12
+```
+
+> TODO: Try to improve compression for Node 14 canvas binaries.
 
 You can write your lambda function directly on AWS console or you can upload a zip archive with your compiled code and its dependencies. Lambda providesthe operating system and runtime for your function.
 
