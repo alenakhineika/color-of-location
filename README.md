@@ -55,7 +55,7 @@ You can write your lambda function directly on AWS console or you can upload a z
 
 `Node-canvas` requires a few packages like Cairo and Pango to be uploaded to the AWS lambda function. And these native libraries should be pre-compiled on an identical EC2 instance.
 
-The [node-canvas-lambda](https://github.com/jwerre/node-canvas-lambda) provides binaries for Node 12 and a script to recompile the layers for different Node versions. Make sure to run the script on Ubuntu to build binaries compatible with AWS Lambda that runs on Amazon's special flavor of Linux.
+The [node-canvas-lambda](https://github.com/jwerre/node-canvas-lambda) provides binaries for Node 12 and a script to recompile the layers for different Node versions.
 
 ## To run locally
 
