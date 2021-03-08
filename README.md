@@ -2,7 +2,7 @@
 
 > The [Color of Berlin](https://github.com/laurendorman/color-of-berlin) Twitter bot changed the source image what causes extreme colors in the timeline. This project fetches the color of the sky from the [Instituts für Meteorologie der FU-Berlin](http://www.met.fu-berlin.de/de/wetter/webcam/) and saved them directly to the database to supply the [Color of Berlin Palette](https://github.com/alenakhineika/color-of-berlin-palette) with realistic colors.
 
-The `Color of Location` uses the `node-canvas` native module, therefore to make it work with AWS the lambda function the project should be compiled on the Linux environment, and the `node-canvas` module should be pre-built and uploaded to AWS lambda layers.
+The `Color of Location` is an AWS serverless application integrated with Atlas. It uses the `node-canvas` native module to get an image color, therefore to make it work with the AWS lambda function the project should be compiled on the Linux environment, and the `node-canvas` module should be pre-built and uploaded to AWS lambda layers.
 
 ## Install
 
