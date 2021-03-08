@@ -30,7 +30,7 @@ Install wget, zip, unzip and [node](https://gist.github.com/d2s/372b5943bce17b96
 > wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 ```
 
-> Close and reopen your terminal to start using nvm or run the following to use it right away:
+Close and reopen your terminal to start using nvm or run the following to use it right away:
 
 ```
 > export NVM_DIR="$HOME/.nvm"
