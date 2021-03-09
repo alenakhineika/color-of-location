@@ -110,8 +110,4 @@ const saveToMongoDB = async (colorName, colorHex) => {
   }
 };
 
-exports.handler = run;
-
-if (process.env.NODE_ENV !== 'production') {
-  run();
-}
+module.exports.handler = run;

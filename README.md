@@ -9,7 +9,7 @@ The `Color of Location` is an AWS serverless application integrated with [MongoD
 Clone the project to your host machine.
 
 ```
-> cd /Users/alenakhineika/shared
+> cd /Users/alenakhineika/www
 > mkdir color-of-location
 > cd color-of-location
 > git clone git@github.com:alenakhineika/color-of-location.git .
@@ -18,13 +18,12 @@ Clone the project to your host machine.
 Use [Docker](https://docs.docker.com/get-docker/) to run Ubuntu on MacOS and use [volumes](https://docs.docker.com/storage/volumes/) to share data between host and container.
 
 ```
-> docker run -v /Users/alenakhineika/shared:/home -it --rm ubuntu bash
+> docker run -v /Users/alenakhineika/www:/home/www -it --rm ubuntu bash
 ```
 
 Install wget, zip, unzip and [node](https://gist.github.com/d2s/372b5943bce17b964a79).
 
 ```
-> cd home
 > apt-get update
 > apt-get install wget zip unzip
 > wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
@@ -34,8 +33,8 @@ Close and reopen your terminal to start using nvm or run the following to use it
 
 ```
 > export NVM_DIR="$HOME/.nvm"
-> [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-> [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion bash_completion
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion bash_completion
 ```
 
 The current example uses Node 12. The problem with Node 14 is that `node-canvas` binaries for this version exceed the allowed total lambda function size.
@@ -49,6 +48,8 @@ The current example uses Node 12. The problem with Node 14 is that `node-canvas`
 You can write your lambda function directly on AWS console or you can upload a zip archive with your compiled code and its dependencies. Lambda providesthe operating system and runtime for your function.
 
 ```
+> cd home/www/color-of-location
+> rm -rf node_modules package-lock.json code.zip
 > npm i
 > zip -r code.zip node_modules/ index.js package.json
 ```
@@ -64,26 +65,17 @@ In the project root directory create the `.env` file from the `.env.example` fil
 - SOURCE_IMAGE - The URL to the webcam image.
 - LOCATION - The text name of the location.
 - MONGODB_ATLAS_CLUSTER_URI - The connection string to the database.
+- NODE_ENV - Set `production` for AWS Labmbda.
 
-Start the project.
+Call the lambda handler.
 
 ```
-> node index.js
+> node -e 'require("./index.js").handler()'
 ```
 
 ## To run with AWS Lambda
 
-The projects' root directory should contain the `index.js` file that exports your custom lanbda handler.
-
-```js
-const run = () => {
-  /* ... */
-};
-
-exports.handler = run;
-```
-
-Configure AWS Lambda:
+AWS will call `handler` automatically after you configure the lambda function following these steps:
 - Create a lambda function.
 - Add integration between Lambda and Atlas.
 - Add environment variables.
