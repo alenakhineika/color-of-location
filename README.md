@@ -38,7 +38,7 @@ Call the lambda handler.
 
 ## Run with AWS Lambda
 
-AWS will call `handler` automatically after you configure the lambda function following these steps:
+AWS will call `handler` automatically after you configure the lambda function:
 - Create a lambda function.
 - Add integration between Lambda and Atlas via IAM roles.
 - Add environment variables.
