@@ -33,8 +33,8 @@ Close and reopen your terminal to start using nvm or run the following to use it
 
 ```
 > export NVM_DIR="$HOME/.nvm"
- [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
- [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion bash_completion
+ [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+ [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 ```
 
 The current example uses Node 12. The problem with Node 14 is that `node-canvas` binaries for this version exceed the allowed total lambda function size.
