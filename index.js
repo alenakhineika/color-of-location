@@ -1,10 +1,14 @@
 'use strict';
 
+const convert = require('color-convert');
+const { Duplex } = require('stream');
 const http = require('http');
 const MongoClient = require('mongodb').MongoClient;
-const convert = require('color-convert');
 const PImage = require('pureimage');
-const { Duplex } = require('stream');
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const bufferToStream = (myBuuffer) => {
   let tmp = new Duplex();
@@ -15,17 +19,13 @@ const bufferToStream = (myBuuffer) => {
   return tmp;
 }
 
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
 const MONGODB_DATABASE = 'coloroflocation';
 const MONGODB_COLLECTION = 'colors';
 
-const SLEEP_TIME = 60 * 60 * 1000;
-
-const getColor = (buf) => PImage.decodeJPEGFromStream(bufferToStream(buf)).then((img) => {
+const getColor = (stream) => PImage.decodeJPEGFromStream(stream).then((img) => {
   const bitmap = PImage.make(400, 300);
+  console.log('Bitmap created');
+
   const ctx = bitmap.getContext('2d');
 
   ctx.drawImage(img, 0, 0, img.width, img.height);
@@ -35,11 +35,11 @@ const getColor = (buf) => PImage.decodeJPEGFromStream(bufferToStream(buf)).then(
   console.log('Image data received');
 
   return [data[4], data[5], data[6]];
-});;
+});
 
 const run = () => {
   return new Promise((resolve) => {
-    console.log('Lambda function was called according to schedule');
+    console.log('Lambda called according to schedule');
     console.log(`Fetch image from ${process.env.SOURCE_IMAGE}`);
 
     const req = http.get(process.env.SOURCE_IMAGE, (res) => {
@@ -51,21 +51,23 @@ const run = () => {
         });
 
         res.on('end', async () => {
-          console.log('Image successfully fetched');
+          console.log('Fetch image completed');
 
           const buf = Buffer.concat(chunks);
-          const colorRGB = await getColor(buf);
 
+          const colorRGB = await getColor(bufferToStream(buf));
           console.log('Get color completed');
 
           const colorHex = convert.rgb.hex(colorRGB);
           const colorName = convert.rgb.keyword(colorRGB);
 
-          await saveToMongoDB(colorName, colorHex);
-
-          console.log(`Repeat fetch in ${Math.round(SLEEP_TIME / 60 / 1000)} minutes`);
-
-          return resolve(true);
+          try {
+            await saveToMongoDB(colorName, colorHex);
+            return resolve(true);
+          } catch (error) {
+            console.error('MongoDB Error', error.message);
+            return resolve(false);
+          }
         });
       } else {
         console.error('Error fetching image from source', res.statusCode);
@@ -86,25 +88,22 @@ const saveToMongoDB = async (colorName, colorHex) => {
     useUnifiedTopology: true,
   });
 
-  try {
-    await client.connect();
-    console.log(`Connected to MongoDB client`);
+  await client.connect();
+  console.log(`Connected to MongoDB`);
 
-    const database = client.db(MONGODB_DATABASE);
-    const collection = database.collection(MONGODB_COLLECTION);
-  
-    await collection.insertOne({
-      created_at: new Date(),
-      location: process.env.LOCATION,
-      colorName,
-      colorHex
-    });
-    console.log(`Color saved to MongoDB '${MONGODB_DATABASE}.${MONGODB_COLLECTION}'`);
-    await client.close();
-    console.log(`Connection closed`);
-  } catch (error) {
-    console.error('MongoDB Error', error.message);
-  }
+  const database = client.db(MONGODB_DATABASE);
+  const collection = database.collection(MONGODB_COLLECTION);
+
+  await collection.insertOne({
+    created_at: new Date(),
+    location: process.env.LOCATION,
+    colorName,
+    colorHex
+  });
+  console.log(`Data saved to MongoDB '${MONGODB_DATABASE}.${MONGODB_COLLECTION}'`);
+
+  await client.close();
+  console.log(`Connection closed`);
 };
 
 module.exports.handler = run;
