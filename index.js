@@ -98,7 +98,7 @@ const saveToMongoDB = async (colorName, colorHex) => {
   
     await collection.insertOne({
       created_at: new Date(),
-      text: `The color of the sky in ${process.env.LOCATION} is ${colorName}. #${colorHex}.`,
+      location: process.env.LOCATION,
       colorName,
       colorHex
     });
