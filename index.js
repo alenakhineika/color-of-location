@@ -2,10 +2,18 @@
 
 const http = require('http');
 const MongoClient = require('mongodb').MongoClient;
-const canvas = require('canvas');
-const Image = canvas.Image;
-const createCanvas = canvas.createCanvas;
 const convert = require('color-convert');
+const PImage = require('pureimage');
+const { Duplex } = require('stream');
+
+const bufferToStream = (myBuuffer) => {
+  let tmp = new Duplex();
+
+  tmp.push(myBuuffer);
+  tmp.push(null);
+
+  return tmp;
+}
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -16,29 +24,18 @@ const MONGODB_COLLECTION = 'colors';
 
 const SLEEP_TIME = 60 * 60 * 1000;
 
-const getColor = (src) => {
-  const img = new Image();
+const getColor = (buf) => PImage.decodeJPEGFromStream(bufferToStream(buf)).then((img) => {
+  const bitmap = PImage.make(400, 300);
+  const ctx = bitmap.getContext('2d');
 
-  img.src = src;
-
-  const canvas = createCanvas(400, 300);
-  console.log('Canvas created');
-
-  const ctx = canvas.getContext('2d');
-
-  canvas.width = img.width;
-  canvas.height = img.height;
-  
-  ctx.drawImage(img, 0, 0);
+  ctx.drawImage(img, 0, 0, img.width, img.height);
   console.log('Draw image completed');
 
   const data = ctx.getImageData(0, 0, img.width / 2, img.height / 2).data;
   console.log('Image data received');
 
-  const color = [data[4], data[5], data[6]];
-
-  return color;
-};
+  return [data[4], data[5], data[6]];
+});;
 
 const run = () => {
   return new Promise((resolve) => {
@@ -56,8 +53,8 @@ const run = () => {
         res.on('end', async () => {
           console.log('Image successfully fetched');
 
-          const src = Buffer.concat(chunks);
-          const colorRGB = getColor(src);
+          const buf = Buffer.concat(chunks);
+          const colorRGB = await getColor(buf);
 
           console.log('Get color completed');
 
@@ -66,20 +63,20 @@ const run = () => {
 
           await saveToMongoDB(colorName, colorHex);
 
-          resolve(true);
+          console.log(`Repeat fetch in ${Math.round(SLEEP_TIME / 60 / 1000)} minutes`);
+
+          return resolve(true);
         });
       } else {
         console.error('Error fetching image from source', res.statusCode);
-        resolve(false);
+        return resolve(false);
       }
     });
 
     req.on('error', (error) => {
       console.error('Request Error', error.message);
-      resolve(false);
+      return resolve(false);
     });
-
-    console.log(`Repeat fetch in ${Math.round(SLEEP_TIME / 60 / 1000)} minutes`);
   });
 };
 
