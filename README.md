@@ -1,10 +1,8 @@
 # Color of Location
 
-> The [Color of Berlin](https://github.com/laurendorman/color-of-berlin) Twitter bot changed the source image what causes extreme colors in the timeline. This project fetches images of the sky from the [Institute for Meteorology of Free University of Berlin](http://www.met.fu-berlin.de/de/wetter/webcam/), extracts colors, and saves them directly to the database to supply [Color of Berlin Palette](https://github.com/alenakhineika/color-of-berlin-palette) with realistic color values.
+The `Color of Location` is an AWS serverless application that can be integrated for example with [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). It fetches a `jpeg` image from the source URL, gets the image color, and saves data to MongoDB database.
 
-The `Color of Location` is an AWS serverless application integrated with [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). It uses [node-pureimage](https://github.com/joshmarinacci/node-pureimage) instead of `node-canvas`, because `node-canvas` requires such dependencies as Cairo and Pango that have to be precompiled and uploaded to AWS lambda layers.
-
-The [node-canvas-lambda](https://github.com/jwerre/node-canvas-lambda) provides binaries for Node 12 and a script to recompile the layers for different Node versions. But binaries for Node 14 became too large so it makes sense to replace `node-canvas` with `node-pureimage` that is a pure JavaScript implementation of the HTML Canvas 2d drawing API for NodeJS and it doesn't have native dependencies.
+The project was created from the [Color of Berlin](https://github.com/laurendorman/color-of-berlin) Twitter bot, that fetches images of the sky from a webcam in Berlin. Both projects require a static URL that servers different images to collect changing data. To demonstrate how it works I built another project that servers the [Unsplash random image](https://source.unsplash.com/random).
 
 ## Install
 
@@ -25,9 +23,11 @@ You can create lambda functions directly on the AWS console but if your function
 
 In the project root directory create the `.env` file from the `.env.example` file and set all required values:
 
-- SOURCE_IMAGE - The URL to the webcam image.
-- LOCATION - The text name of the location.
-- MONGODB_ATLAS_CLUSTER_URI - The connection string to the database.
+- SOURCE_IMAGE - A URL to the `jpeg` image.
+- LOCATION - A text name of the location.
+- MONGODB_ATLAS_CLUSTER_URI - A connection string to a database.
+- MONGODB_DATABASE - The database name.
+- MONGODB_COLLECTION - The collection name.
 - NODE_ENV - Set `production` for AWS Labmbda.
 
 Call the lambda handler.

@@ -3,6 +3,7 @@
 const convert = require('color-convert');
 const { Duplex } = require('stream');
 const http = require('http');
+const https = require('https');
 const MongoClient = require('mongodb').MongoClient;
 const PImage = require('pureimage');
 
@@ -19,8 +20,11 @@ const bufferToStream = (myBuuffer) => {
   return tmp;
 }
 
-const MONGODB_DATABASE = 'coloroflocation';
-const MONGODB_COLLECTION = 'colors';
+const SOURCE_IMAGE = process.env.SOURCE_IMAGE;
+const LOCATION = process.env.LOCATION;
+const MONGODB_ATLAS_CLUSTER_URI = process.env.MONGODB_ATLAS_CLUSTER_URI;
+const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
+const MONGODB_COLLECTION = process.env.MONGODB_COLLECTION;
 
 const getColor = (stream) => PImage.decodeJPEGFromStream(stream).then((img) => {
   const bitmap = PImage.make(400, 300);
@@ -40,9 +44,12 @@ const getColor = (stream) => PImage.decodeJPEGFromStream(stream).then((img) => {
 const run = () => {
   return new Promise((resolve) => {
     console.log('Lambda called according to schedule');
-    console.log(`Fetch image from ${process.env.SOURCE_IMAGE}`);
+    console.log(`Fetch image from ${SOURCE_IMAGE}`);
 
-    const req = http.get(process.env.SOURCE_IMAGE, (res) => {
+    const sourceUrl = new URL(SOURCE_IMAGE);
+    const get = sourceUrl.protocol === 'https:' ? https.get : http.get;
+
+    const req = get(SOURCE_IMAGE, (res) => {
       if (res.statusCode == 200) {
         const chunks = [];
 
@@ -54,6 +61,14 @@ const run = () => {
           console.log('Fetch image completed');
 
           const buf = Buffer.concat(chunks);
+
+          if (process.env.NODE_ENV !== 'production') {
+            fs.writeFile('output.png', buf, 'base64', (error) => {
+              if (error) throw error;
+
+              console.log('Output png updated');
+            });
+          }
 
           const colorRGB = await getColor(bufferToStream(buf));
           console.log('Get color completed');
@@ -83,7 +98,7 @@ const run = () => {
 };
 
 const saveToMongoDB = async (colorName, colorHex) => {
-  const client = new MongoClient(process.env.MONGODB_ATLAS_CLUSTER_URI, {
+  const client = new MongoClient(MONGODB_ATLAS_CLUSTER_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
@@ -96,7 +111,7 @@ const saveToMongoDB = async (colorName, colorHex) => {
 
   await collection.insertOne({
     created_at: new Date(),
-    location: process.env.LOCATION,
+    location: LOCATION,
     colorName,
     colorHex
   });
