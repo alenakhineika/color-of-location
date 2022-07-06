@@ -5,10 +5,9 @@
   "description": "Fetch the color of the sky for location",
   "main": "index.js",
   "dependencies": {
-    "canvas": "2.6.1",
     "color-convert": "^2.0.1",
-    "dotenv": "^8.2.0",
-    "mongodb": "^3.6.4",
-    "pureimage": "^0.2.7"
+    "dotenv": "^16.0.1",
+    "mongodb": "^4.7.0",
+    "pureimage": "^0.3.14"
   }
 }
